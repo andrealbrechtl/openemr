@@ -1,0 +1,29 @@
+version: "3.1"
+services:
+  mysql:
+    image: "mariadb:10.11"
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=maGJ5FgHon0UWSXZ6pHDqp03FsRnCoN9cusGRaSn2G
+      - MYSQL_USER=openemr
+      - MYSQL_PASSWORD=FrET3p8PqqxJligzjcMQxuAxlX7wYSc0g7rjzdb2kr
+      - MYSQL_DATABASE=openemr
+    volumes:
+      - "database_data:/var/lib/mysql"
+  openemr:
+    restart: always
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_ROOT_PASS=maGJ5FgHon0UWSXZ6pHDqp03FsRnCoN9cusGRaSn2G
+      - MYSQL_USER=openemr
+      - MYSQL_PASS=FrET3p8PqqxJligzjcMQxuAxlX7wYSc0g7rjzdb2kr
+      - MYSQL_DATABASE=openemr
+      - OE_USER=admin
+      - OE_PASS=rR8BrQE9uZrJKL8TBKIIVMCZ5OuZqlJHpwY5qtrYrN
+    volumes:
+      - "openemr_sites:/var/www/localhost/htdocs/openemr/sites"
+    depends_on:
+      - mysql
+volumes:
+  database_data: null
+  openemr_sites: null
