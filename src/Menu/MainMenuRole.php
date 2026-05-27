@@ -119,8 +119,8 @@ class MainMenuRole extends MenuRole
         $userService = new UserService();
         $user = $userService->getCurrentlyLoggedInUser();
         $mainMenuRole = $user['main_menu_role'];
-        if (empty($mainMenuRole)) {
-            $mainMenuRole = "standard";
+        if (empty($mainMenuRole) || $mainMenuRole === "standard" || $mainMenuRole === "front_office" || $mainMenuRole === "answering_service") {
+            $mainMenuRole = "simplified";
         }
 
         return $mainMenuRole;

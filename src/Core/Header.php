@@ -126,6 +126,11 @@ class Header
             $output .= "<!-- Module Styles Ended -->";
         }
 
+        // Inject custom premium redesign styles for a gorgeous slate/teal theme across OpenEMR
+        $webroot = OEGlobalsBag::getInstance()->getWebRoot();
+        $output .= "\n<!-- Premium Redesign Stylesheet -->\n";
+        $output .= "<link rel=\"stylesheet\" href=\"{$webroot}/public/assets/premium_redesign.css?v=" . OEGlobalsBag::getInstance()->getString('v_js_includes') . "\" />\n";
+
         if ($echoOutput) {
             echo $output;
         }

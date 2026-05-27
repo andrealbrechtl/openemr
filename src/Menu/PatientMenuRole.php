@@ -132,8 +132,8 @@ class PatientMenuRole extends MenuRole
         $userService = new UserService();
         $user = $userService->getCurrentlyLoggedInUser();
         $patientMenuRole = $user['patient_menu_role'];
-        if (empty($patientMenuRole)) {
-            $patientMenuRole = "standard";
+        if (empty($patientMenuRole) || $patientMenuRole === "standard") {
+            $patientMenuRole = "simplified";
         }
 
         return $patientMenuRole;

@@ -1,0 +1,95 @@
+[
+  {
+    "label": "Home",
+    "menu_id": "hom0",
+    "target": "hom",
+    "url": "/interface/main/welcome.php",
+    "children": [],
+    "requirement": 0
+  },
+  {
+    "label": "Calendar",
+    "menu_id": "cal0",
+    "target": "cal",
+    "url": "/interface/main/main_info.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": [
+      "patients",
+      "appt"
+    ]
+  },
+  {
+    "label": "Patient Finder",
+    "menu_id": "fin0",
+    "target": "fin",
+    "url": "/interface/main/finder/dynamic_finder.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": [
+      "patients",
+      "demo"
+    ]
+  },
+  {
+    "label": "New Patient",
+    "menu_id": "new0",
+    "target": "pat",
+    "url": "/interface/new/new.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": [
+      "patients",
+      "demo",
+      "write",
+      "addonly"
+    ]
+  },
+  {
+    "label": "Messages",
+    "menu_id": "msg0",
+    "target": "msg",
+    "url": "/interface/main/messages/messages.php?form_active=1",
+    "children": [],
+    "requirement": 0,
+    "acl_req": [
+      "patients",
+      "notes"
+    ]
+  },
+  {
+    "label": "Admin",
+    "menu_id": "admimg",
+    "requirement": 0,
+    "acl_req": [
+      "admin",
+      "super"
+    ],
+    "children": [
+      {
+        "label": "Globals",
+        "menu_id": "adm0",
+        "target": "adm",
+        "url": "/interface/super/edit_globals.php",
+        "children": [],
+        "requirement": 0
+      },
+      {
+        "label": "Users",
+        "menu_id": "adm0",
+        "target": "adm",
+        "url": "/interface/usergroup/usergroup_admin.php",
+        "children": [],
+        "requirement": 0
+      },
+      {
+        "label": "Lists",
+        "menu_id": "adm0",
+        "target": "adm",
+        "url": "/interface/super/edit_list.php",
+        "children": [],
+        "requirement": 0
+      }
+    ]
+  }
+]

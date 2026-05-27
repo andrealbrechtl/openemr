@@ -403,71 +403,86 @@ tr.selected {
                     }
                     ?>
 
-                    <?php if (!($useCVX)) { ?>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Immunization'); ?></label>
-                        <?php
-                        // Modified 7/2009 by BM to incorporate the immunization items into the list_options listings
-                        generate_form_field(['data_type' => 1,'field_id' => 'immunization_id','list_id' => 'immunizations','empty_title' => 'SKIP'], $immunization_id);
-                        ?>
-                    </div>
-                    <?php } else { ?>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Immunization'); ?> (<?php echo xlt('CVX Code'); ?>)</label>
-                        <input type='text' class='form-control' size='10' name='cvx_code' id='cvx_code'
-                            value='<?php echo attr($cvx_code ?? ''); ?>' onclick='sel_cvxcode(this)'
-                            title='<?php echo xla('Click to select or change CVX code'); ?>'/>
-                        <div id='cvx_description' class='d-inline float-right p-1 ml-2'>
-                            <?php echo xlt($code_text ?? ''); ?>
-                        </div>
-                    </div>
-                    <?php } ?>
+                    <div class="row">
+                        <!-- Column 1: Vaccine & Administration Info -->
+                        <div class="col-lg-4 mb-3">
+                            <div class="card p-3 h-100" style="background: rgba(30, 41, 59, 0.25) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                                <h5 class="mb-3 text-teal"><i class="fa fa-syringe mr-2"></i><?php echo xlt('Vaccine Info'); ?></h5>
+                                
+                                <?php if (!($useCVX)) { ?>
+                                <div class="form-group">
+                                    <label><?php echo xlt('Immunization'); ?></label>
+                                    <?php
+                                    generate_form_field(['data_type' => 1,'field_id' => 'immunization_id','list_id' => 'immunizations','empty_title' => 'SKIP'], $immunization_id);
+                                    ?>
+                                </div>
+                                <?php } else { ?>
+                                <div class="form-group">
+                                    <label><?php echo xlt('Immunization'); ?> (<?php echo xlt('CVX Code'); ?>)</label>
+                                    <input type='text' class='form-control' size='10' name='cvx_code' id='cvx_code'
+                                        value='<?php echo attr($cvx_code ?? ''); ?>' onclick='sel_cvxcode(this)'
+                                        title='<?php echo xla('Click to select or change CVX code'); ?>'/>
+                                    <div id='cvx_description' class='d-inline float-right p-1 ml-2'>
+                                        <?php echo xlt($code_text ?? ''); ?>
+                                    </div>
+                                </div>
+                                <?php } ?>
 
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Date & Time Administered'); ?></label>
-                        <input type='text' size='14' class='datetimepicker form-control' name="administered_date" id="administered_date"
-                            value='<?php echo (!empty($administered_date)) ? attr($administered_date) : date('Y-m-d H:i'); ?>'
-                            title='<?php echo xla('yyyy-mm-dd Hours(24):minutes'); ?>'/>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Amount Administered'); ?></label>
-                        <input class='text form-control mb-2' type='text' name="immuniz_amt_adminstrd" size="25" value="<?php echo attr($immuniz_amt_adminstrd ?? ''); ?>" />
-                        <?php echo generate_select_list("form_drug_units", "drug_units", ($drugunitselecteditem ?? ''), 'Select Drug Unit', ''); ?>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Immunization Expiration Date'); ?></label>
-                        <input type='text' size='10' class='datepicker form-control' name="immuniz_exp_date" id="immuniz_exp_date"
-                            value='<?php echo (!empty($immuniz_exp_date)) ? attr($immuniz_exp_date) : ''; ?>'
-                            title='<?php echo xla('yyyy-mm-dd'); ?>' />
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Immunization Manufacturer'); ?></label>
-                        <?php echo generate_select_list('manufacturer', 'Immunization_Manufacturer', ($manufacturer ?? ''), 'Select Manufacturer', ' ');?>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Immunization Lot Number'); ?></label>
-                        <br>
-                        <select class='auto form-control' type='text' name="lot_number" size="25" value="<?php echo attr($lot_number ?? ''); ?>"></select>
-                    </div>
-                    <div class="form-row mt-3">
-                        <div class="col-12">
-                            <label><?php echo xlt('Name and Title of Immunization Administrator'); ?></label>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Date & Time Administered'); ?></label>
+                                    <input type='text' size='14' class='datetimepicker form-control' name="administered_date" id="administered_date"
+                                        value='<?php echo (!empty($administered_date)) ? attr($administered_date) : date('Y-m-d H:i'); ?>'
+                                        title='<?php echo xla('yyyy-mm-dd Hours(24):minutes'); ?>'/>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Amount Administered'); ?></label>
+                                    <input class='text form-control mb-2' type='text' name="immuniz_amt_adminstrd" size="25" value="<?php echo attr($immuniz_amt_adminstrd ?? ''); ?>" />
+                                    <?php echo generate_select_list("form_drug_units", "drug_units", ($drugunitselecteditem ?? ''), 'Select Drug Unit', ''); ?>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Route'); ?></label>
+                                    <?php echo generate_select_list('immuniz_route', 'drug_route', ($immuniz_route ?? ''), 'Select Route', '');?>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Administration Site'); ?></label>
+                                    <?php echo generate_select_list('immuniz_admin_ste', 'immunization_administered_site', ($immuniz_admin_ste ?? ''), 'Select Administration Site', ' ', '', '', '', null, false, 'proc_body_site');?>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Notes'); ?></label>
+                                    <textarea class="form-control" name="note" id="note" rows="3" style="width: 100%;"><?php echo text($note ?? ''); ?></textarea>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-12 col-sm-5">
-                            <input type="text" class="form-control" name="administered_by" id="administered_by" size="25" value="<?php echo attr($administered_by); ?>" />
-                        </div>
-                        <div class="col-12 col-sm-2 text-center">
-                            <?php echo xlt('or choose'); ?>
-                        </div>
-                        <div class="col-12 col-sm-5">
-                        <!-- NEEDS WORK -->
-                        <select class="form-control" name="administered_by_id" id='administered_by_id'>
-                                    <option value=""></option>
+
+                        <!-- Column 2: Lot & Administrator Details -->
+                        <div class="col-lg-4 mb-3">
+                            <div class="card p-3 h-100" style="background: rgba(30, 41, 59, 0.25) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                                <h5 class="mb-3 text-teal"><i class="fa fa-barcode mr-2"></i><?php echo xlt('Lot & Admin Details'); ?></h5>
+                                
+                                <div class="form-group">
+                                    <label><?php echo xlt('Immunization Expiration Date'); ?></label>
+                                    <input type='text' size='10' class='datepicker form-control' name="immuniz_exp_date" id="immuniz_exp_date"
+                                        value='<?php echo (!empty($immuniz_exp_date)) ? attr($immuniz_exp_date) : ''; ?>'
+                                        title='<?php echo xla('yyyy-mm-dd'); ?>' />
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Immunization Manufacturer'); ?></label>
+                                    <?php echo generate_select_list('manufacturer', 'Immunization_Manufacturer', ($manufacturer ?? ''), 'Select Manufacturer', ' ');?>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Immunization Lot Number'); ?></label>
+                                    <select class='auto form-control' type='text' name="lot_number" size="25" value="<?php echo attr($lot_number ?? ''); ?>"></select>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Administrator Name & Title'); ?></label>
+                                    <input type="text" class="form-control mb-2" name="administered_by" id="administered_by" size="25" value="<?php echo attr($administered_by); ?>" />
+                                    <div class="small text-secondary mb-1 text-center"><?php echo xlt('or choose existing user'); ?>:</div>
+                                    <select class="form-control" name="administered_by_id" id='administered_by_id'>
+                                        <option value=""></option>
                                         <?php
                                         $sql = "select id, CONCAT_WS(' ',lname,fname) as full_name " .
                                             "from users where username != '' and password != 'NoLogin' " .
                                             "order by full_name";
-
                                         $result = sqlStatement($sql);
                                         while ($row = sqlFetchArray($result)) {
                                             echo '<OPTION VALUE=' . attr($row['id']);
@@ -475,88 +490,80 @@ tr.selected {
                                             echo text($row['full_name']) . '</OPTION>';
                                         }
                                         ?>
-                                </select>
+                                    </select>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Date VIS Info Given'); ?></label>
+                                    <input type='text' size='10' class='datepicker form-control' name="education_date" id="education_date"
+                                        value='<?php echo (!empty($education_date)) ? attr($education_date) : date('Y-m-d'); ?>'
+                                        title='<?php echo xla('yyyy-mm-dd'); ?>' />
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label>
+                                        <?php echo xlt('Date of VIS Statement'); ?>
+                                        (<a href="https://www.cdc.gov/vaccines/hcp/current-vis/index.html" title="<?php echo xla('Help'); ?>" rel="noopener" target="_blank">?</a>)
+                                    </label>
+                                    <input type='text' size='10' class='datepicker form-control' name="vis_date" id="vis_date"
+                                        value='<?php echo (!empty($vis_date)) ? attr($vis_date) : date('Y-m-d'); ?>'
+                                        title='<?php echo xla('yyyy-mm-dd'); ?>' />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 3: Status & Context -->
+                        <div class="col-lg-4 mb-3">
+                            <div class="card p-3 h-100" style="background: rgba(30, 41, 59, 0.25) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                                <h5 class="mb-3 text-teal"><i class="fa fa-notes-medical mr-2"></i><?php echo xlt('Clinical Context'); ?></h5>
+                                
+                                <div class="form-group">
+                                    <label><?php echo xlt('Completion Status'); ?></label>
+                                    <?php echo generate_select_list('immuniz_completion_status', 'Immunization_Completion_Status', ($immuniz_completion_status ?? ''), 'Select Completion Status', ' ');?>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Information Source'); ?></label>
+                                    <?php echo generate_select_list('immunization_informationsource', 'immunization_informationsource', ($immuniz_information_source ?? ''), 'Select Information Source', ' ');?>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Substance Refusal Reason'); ?></label>
+                                    <?php echo generate_select_list('immunization_refusal_reason', 'immunization_refusal_reason', ($immuniz_refusal_reason ?? ''), 'Select Refusal Reason', ' ');?>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Reason Code'); ?></label>
+                                    <input class="code-selector-popup form-control immunizationReasonCode"
+                                           name="reason_code" type="text" value="<?php echo attr($reason_code ?? ''); ?>"
+                                           placeholder="<?php echo xla("Select a reason code"); ?>"
+                                    />
+                                    <input type="hidden" name="reason_code_text" value="<?php echo attr($reason_code_text ?? ''); ?>" />
+                                    <p class="reason_code_text d-inline float-right p-1 ml-2 <?php echo empty($reason_code_text) ? "" : "d-none"; ?>"></p>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Ordering Provider'); ?></label>
+                                    <select class="form-control" name="ordered_by_id" id='ordered_by_id'>
+                                        <option value=""></option>
+                                        <?php
+                                        $sql = "select id, CONCAT(IFNULL(lname,''), ' ,',IFNULL(fname,'')) as full_name " .
+                                            "from users where username != '' and password != 'NoLogin' " .
+                                            "order by full_name";
+                                        $result = sqlStatement($sql);
+                                        while ($row = sqlFetchArray($result)) {
+                                            echo '<OPTION VALUE=' . attr($row['id']);
+                                            echo (isset($ordered_by_id) && $ordered_by_id != "" ? $ordered_by_id : $session->get('authUserID')) == $row['id'] ? ' selected>' : '>';
+                                            echo text($row['full_name']) . '</OPTION>';
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label><?php echo xlt('Encounter'); ?></label>
+                                    <?php
+                                    $encounterType = new EncounterListOptionType($pid);
+                                    echo $encounterType->render('encounter_id', $immunizationEncounter ?? '');
+                                    ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Date Immunization Information Statements Given'); ?></label>
-                        <input type='text' size='10' class='datepicker form-control' name="education_date" id="education_date"
-                            value='<?php echo (!empty($education_date)) ? attr($education_date) : date('Y-m-d'); ?>'
-                            title='<?php echo xla('yyyy-mm-dd'); ?>' />
-                    </div>
-                    <div class="form-group mt-3">
-                        <label>
-                            <?php echo xlt('Date of VIS Statement'); ?>
-                            (<a href="https://www.cdc.gov/vaccines/hcp/current-vis/index.html" title="<?php echo xla('Help'); ?>" rel="noopener" target="_blank">?</a>)
-                        </label>
-                        <input type='text' size='10' class='datepicker  form-control' name="vis_date" id="vis_date"
-                            value='<?php echo (!empty($vis_date)) ? attr($vis_date) : date('Y-m-d'); ?>'
-                            title='<?php echo xla('yyyy-mm-dd'); ?>' />
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Route'); ?></label>
-                        <?php echo generate_select_list('immuniz_route', 'drug_route', ($immuniz_route ?? ''), 'Select Route', '');?>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Administration Site'); ?></label>
-                        <?php echo generate_select_list('immuniz_admin_ste', 'immunization_administered_site', ($immuniz_admin_ste ?? ''), 'Select Administration Site', ' ', '', '', '', null, false, 'proc_body_site');?>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Notes'); ?></label>
-                        <textarea class="form-control" name="note" id="note" rows="5" cols="25"><?php echo text($note ?? ''); ?></textarea>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Information Source'); ?></label>
-                        <?php echo generate_select_list('immunization_informationsource', 'immunization_informationsource', ($immuniz_information_source ?? ''), 'Select Information Source', ' ');?>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Completion Status'); ?></label>
-                        <?php echo generate_select_list('immuniz_completion_status', 'Immunization_Completion_Status', ($immuniz_completion_status ?? ''), 'Select Completion Status', ' ');?>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Substance Refusal Reason'); ?></label>
-                        <?php echo generate_select_list('immunization_refusal_reason', 'immunization_refusal_reason', ($immuniz_refusal_reason ?? ''), 'Select Refusal Reason', ' ');?>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Reason Code'); ?></label>
-                        <input class="code-selector-popup form-control immunizationReasonCode"
-                               name="reason_code" type="text" value="<?php echo attr($reason_code ?? ''); ?>"
-                               placeholder="<?php echo xla("Select a reason code"); ?>"
-                        />
-                        <input type="hidden" name="reason_code_text" value="<?php echo attr($reason_code_text ?? ''); ?>" />
-                        <p class="reason_code_text d-inline float-right p-1 ml-2 <?php echo empty($reason_code_text) ? "" : "d-none"; ?>"></p>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Immunization Ordering Provider'); ?></label>
-                        <select class="form-control" name="ordered_by_id" id='ordered_by_id'>
-                            <option value=""></option>
-                                <?php
-                                $sql = "select id, CONCAT(IFNULL(lname,''), ' ,',IFNULL(fname,'')) as full_name " .
-                                    "from users where username != '' and password != 'NoLogin' " .
-                                    "order by full_name";
 
-                                $result = sqlStatement($sql);
-                                while ($row = sqlFetchArray($result)) {
-                                    echo '<OPTION VALUE=' . attr($row['id']);
-                                    echo (isset($ordered_by_id) && $ordered_by_id != "" ? $ordered_by_id : $session->get('authUserID')) == $row['id'] ? ' selected>' : '>';
-                                    echo text($row['full_name']) . '</OPTION>';
-                                }
-                                ?>
-                        </select>
-                    </div>
-
-                    <?php
-                    // need to add the encounter linkage using the TwigExtension function encounterSelectList
-                    ?>
-                    <div class="form-group mt-3">
-                        <label><?php echo xlt('Encounter'); ?></label>
-                        <?php
-                        $encounterType = new EncounterListOptionType($pid);
-                        echo $encounterType->render('encounter_id', $immunizationEncounter ?? '');
-                        ?>
-
-                        </div>
-                    </div>
                     <div class="row mt-3">
                         <div class="col-12 text-center">
                             <?php
@@ -746,55 +753,37 @@ tr.selected {
                     </div>
                 </form>
 
-                <div class="table-responsive" id="immunization_list">
-                    <table class="table">
-                        <!-- some columns are sortable -->
-                        <tr>
-                            <th>
-                                <a href="javascript:top.restoreSession();location.href='immunizations.php?sortby=vacc';" title='<?php echo xla('Sort by vaccine'); ?>'>
-                                    <?php echo xlt('Vaccine'); ?>
-                                </a>
-                                <span class='small'>
-                                    <?php echo ($sortby == 'vacc') ? 'v' : ''; ?>
-                                </span>
-                            </th>
-                            <th>
-                                <a href="javascript:top.restoreSession();location.href='immunizations.php?sortby=date';" title='<?php echo xla('Sort by date'); ?>'>
-                                    <?php echo xlt('Date'); ?>
-                                </a>
-                                <span class='small'>
-                                    <?php echo ($sortby == 'date') ? 'v' : ''; ?>
-                                </span>
-                            </th>
-                            <th><?php echo xlt('Amount'); ?></th>
-                            <th><?php echo xlt('Expiration'); ?></th>
-                            <th><?php echo xlt('Manufacturer'); ?></th>
-                            <th><?php echo xlt('Lot Number'); ?></th>
-                            <th><?php echo xlt('Administered By'); ?></th>
-                            <th><?php echo xlt('Education Date'); ?></th>
-                            <th><?php echo xlt('Route'); ?></th>
-                            <th><?php echo xlt('Administered Site'); ?></th>
-                            <th><?php echo xlt('Notes'); ?></th>
-                            <th><?php echo xlt('Completion Status'); ?></th>
-                            <th><?php echo xlt('Error'); ?></th>
-                            <th>&nbsp;</th>
-                        </tr>
+                <div class="d-flex justify-content-between align-items-center mt-5 mb-3 flex-wrap">
+                    <h4><i class="fa fa-history mr-2"></i><?php echo xlt('Past Immunizations'); ?></h4>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="text-secondary small mr-2"><?php echo xlt('Sort by'); ?>:</span>
+                        <a href="javascript:top.restoreSession();location.href='immunizations.php?sortby=vacc';" class="btn btn-sm <?php echo $sortby == 'vacc' ? 'btn-primary' : 'btn-secondary'; ?> mr-2">
+                            <?php echo xlt('Vaccine'); ?> <?php echo ($sortby == 'vacc') ? '↓' : ''; ?>
+                        </a>
+                        <a href="javascript:top.restoreSession();location.href='immunizations.php?sortby=date';" class="btn btn-sm <?php echo $sortby == 'date' ? 'btn-primary' : 'btn-secondary'; ?> mr-3">
+                            <?php echo xlt('Date'); ?> <?php echo ($sortby == 'date') ? '↓' : ''; ?>
+                        </a>
+                        <div class="search-container" style="position: relative; width: 250px;">
+                            <i class="fa fa-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none;"></i>
+                            <input type="text" id="filter-vaccines" class="form-control form-control-sm" placeholder="<?php echo xla('Search past vaccines...'); ?>" autocomplete="off" style="padding-left: 2.2rem !important; width: 100%;">
+                        </div>
+                    </div>
+                </div>
 
+                <div id="immunization_list">
+                    <div class="row" id="vaccines-grid">
                         <?php
                         $result = getImmunizationList($pid, ($_GET['sortby'] ?? null), true);
+                        $hasResults = false;
 
                         while ($row = sqlFetchArray($result)) {
+                            $hasResults = true;
                             $isError = $row['added_erroneously'];
+                            $rowId = $row["id"];
 
-                            $tr_title = $isError ? 'title="' . xla("Entered in Error") . '"' : "";
+                            $cardClass = $isError ? "border-danger opacity-75" : "";
+                            $selectedClass = (!empty($id) && ($rowId == $id)) ? "border-teal shadow-lg" : "";
 
-                            if (!empty($id) && ($row["id"] == $id)) {
-                                echo "<tr " . $tr_title . " class='immrow text selected' id='" . attr($row["id"]) . "'>";
-                            } else {
-                                echo "<tr " . $tr_title . " class='immrow text' id='" . attr($row["id"]) . "'>";
-                            }
-
-                            // Figure out which name to use (ie. from cvx list or from the custom list)
                             if (OEGlobalsBag::getInstance()->getBoolean('use_custom_immun_list')) {
                                 $vaccine_display = generate_display_field(['data_type' => '1','list_id' => 'immunizations'], $row['immunization_id']);
                             } else {
@@ -805,16 +794,6 @@ tr.selected {
                                 }
                             }
 
-                            if ($isError) {
-                                $del_tag_open = "<del>";
-                                $del_tag_close = "</del>";
-                            } else {
-                                $del_tag_open = "";
-                                $del_tag_close = "";
-                            }
-
-                            echo "<td>" . $del_tag_open . $vaccine_display . $del_tag_close . "</td>";
-
                             if ($row["administered_date"]) {
                                 $administered_date_summary = new DateTime($row['administered_date']);
                                 $administered_date_summary = $administered_date_summary->format('Y-m-d H:i');
@@ -822,32 +801,92 @@ tr.selected {
                                 $administered_date_summary = "";
                             }
 
-                            echo "<td>" . $del_tag_open . text($administered_date_summary) . $del_tag_close . "</td>";
-                            if ($row["amount_administered"] > 0) {
-                                echo "<td>" . $del_tag_open . text($row["amount_administered"]) . " " . generate_display_field(['data_type' => '1','list_id' => 'drug_units'], $row['amount_administered_unit']) . $del_tag_close . "</td>";
-                            } else {
-                                echo "<td>&nbsp</td>";
+                            $completionStatus = generate_display_field(['data_type' => '1','list_id' => 'Immunization_Completion_Status'], $row['completion_status']);
+                            $completionBadge = "badge-success";
+                            if (stripos($completionStatus, 'refused') !== false || stripos($completionStatus, 'not') !== false) {
+                                $completionBadge = "badge-warning";
                             }
+                            ?>
+                            <div class="col-md-6 col-lg-4 mb-3 vaccine-card immrow <?php echo (!empty($id) && ($rowId == $id)) ? 'highlight' : ''; ?>" id="<?php echo attr($rowId); ?>">
+                                <div class="card h-100 p-3 <?php echo $cardClass; ?> <?php echo $selectedClass; ?>" style="cursor: pointer; background: var(--card-bg) !important; border: 1px solid var(--card-border) !important; border-radius: 12px;">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="mb-1 font-weight-bold" style="color: #ffffff !important; font-size: 0.95rem;">
+                                                <?php if ($isError) echo "<del>"; ?>
+                                                <?php echo text($vaccine_display); ?>
+                                                <?php if ($isError) echo "</del>"; ?>
+                                            </h6>
+                                            <div class="text-secondary small">
+                                                <i class="fa fa-calendar-alt mr-1"></i><?php echo text($administered_date_summary); ?>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="badge <?php echo $completionBadge; ?>"><?php echo text($completionStatus); ?></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row small my-2 text-secondary">
+                                        <div class="col-6 mb-1">
+                                            <strong>Amount:</strong> 
+                                            <?php if ($row["amount_administered"] > 0) {
+                                                echo text($row["amount_administered"]) . " " . generate_display_field(['data_type' => '1','list_id' => 'drug_units'], $row['amount_administered_unit']);
+                                            } else {
+                                                echo "-";
+                                            } ?>
+                                        </div>
+                                        <div class="col-6 mb-1">
+                                            <strong>Route:</strong> 
+                                            <?php echo generate_display_field(['data_type' => '1','list_id' => 'drug_route'], $row['route']) ?: '-'; ?>
+                                        </div>
+                                        <div class="col-6 mb-1">
+                                            <strong>Site:</strong> 
+                                            <?php echo generate_display_field(['data_type' => '1','list_id' => 'immunization_administered_site'], $row['administration_site']) ?: '-'; ?>
+                                        </div>
+                                        <div class="col-6 mb-1">
+                                            <strong>Lot #:</strong> 
+                                            <?php echo text($row["lot_number"]) ?: '-'; ?>
+                                        </div>
+                                        <div class="col-12 mb-1">
+                                            <strong>Manufacturer:</strong> 
+                                            <?php echo text($row["manufacturer"]) ?: '-'; ?>
+                                        </div>
+                                        <div class="col-12 mb-1">
+                                            <strong>Admin By:</strong> 
+                                            <?php echo text($row["administered_by"]) ?: '-'; ?>
+                                        </div>
+                                    </div>
 
-                            echo "<td>" . $del_tag_open . text($row["expiration_date"]) . $del_tag_close . "</td>";
-                            echo "<td>" . $del_tag_open . text($row["manufacturer"]) . $del_tag_close . "</td>";
-                            echo "<td>" . $del_tag_open . text($row["lot_number"]) . $del_tag_close . "</td>";
-                            echo "<td>" . $del_tag_open . text($row["administered_by"]) . $del_tag_close . "</td>";
-                            echo "<td>" . $del_tag_open . text($row["education_date"]) . $del_tag_close . "</td>";
-                            echo "<td>" . $del_tag_open . generate_display_field(['data_type' => '1','list_id' => 'drug_route'], $row['route']) . $del_tag_close . "</td>";
-                            echo "<td>" . $del_tag_open . generate_display_field(['data_type' => '1','list_id' => 'immunization_administered_site'], $row['administration_site']) . $del_tag_close . "</td>";
-                            echo "<td>" . $del_tag_open . text($row["note"]) . $del_tag_close . "</td>";
-                            echo "<td>" . $del_tag_open . generate_display_field(['data_type' => '1','list_id' => 'Immunization_Completion_Status'], $row['completion_status']) . $del_tag_close . "</td>";
+                                    <?php if ($row["note"]) : ?>
+                                        <div class="small p-2 rounded mb-2 text-secondary" style="background: rgba(15, 23, 42, 0.4); border-left: 3px solid var(--accent-teal); font-style: italic;">
+                                            <strong>Note:</strong> <?php echo text($row["note"]); ?>
+                                        </div>
+                                    <?php endif; ?>
 
-                            $checkbox = $isError ? "checked" : "";
+                                    <?php if ($isError) : ?>
+                                        <div class="text-danger small font-weight-bold mb-2">
+                                            <i class="fa fa-exclamation-triangle mr-1"></i><?php echo xlt("Entered in Error"); ?>
+                                        </div>
+                                    <?php endif; ?>
 
-                                echo "<td><input type='checkbox' class='error' id='" . attr($row["id"]) . "' value='" . xlt('Error') . "' " . $checkbox . " /></td>";
+                                    <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top" style="border-color: rgba(255,255,255,0.06) !important;">
+                                        <div class="form-check" onclick="event.stopPropagation();">
+                                            <input type="checkbox" class="form-check-input error" id="<?php echo attr($rowId); ?>" <?php echo $isError ? "checked" : ""; ?> />
+                                            <label class="form-check-label text-secondary small" for="<?php echo attr($rowId); ?>"><?php echo xlt("Mark Error"); ?></label>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-danger delete" id="<?php echo attr($rowId); ?>">
+                                            <i class="fa fa-trash mr-1"></i><?php echo xlt("Delete"); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php
+                        }
 
-                                echo "<td><button type='button' class='delete btn btn-danger btn-delete' id='" . attr($row["id"]) . "' value='" . xlt('Delete') . "'>" . xlt('Delete') . "</button></td>";
-                                echo "</tr>";
+                        if (!$hasResults) {
+                            echo "<div class='col-12'><p class='text-secondary'>" . xlt('No past immunizations found') . ".</p></div>";
                         }
                         ?>
-                    </table>
+                    </div>
                 </div> <!-- end immunizations -->
             </div>
         </div>
@@ -882,6 +921,19 @@ $(function () {
     $(".immrow").on("mouseout", function() { $(this).toggleClass("highlight"); });
 
     $("#administered_by_id").on("change", function() { $("#administered_by").val($("#administered_by_id :selected").text()); });
+
+    // Live search filter for past vaccines
+    $("#filter-vaccines").on("input", function() {
+        var val = $(this).val().toLowerCase().trim();
+        $(".vaccine-card").each(function() {
+            var text = $(this).text().toLowerCase();
+            if (text.indexOf(val) > -1) {
+                $(this).attr('style', 'display: block !important;');
+            } else {
+                $(this).attr('style', 'display: none !important;');
+            }
+        });
+    });
 
     $("#form_immunization_id").on("change", function() {
         if ( $(this).val() != "" ) {

@@ -218,6 +218,14 @@ $oemr_ui = new OemrUI($arrOeUiSettings);
 
         <div id='patient_stats'>
             <form method='post' action='stats_full.php' onsubmit='return top.restoreSession()'>
+                <div class="row mb-3 mt-2">
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="search-container" style="position: relative; width: 100%;">
+                            <i class="fa fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none;"></i>
+                            <input type="text" id="filter-issues" class="form-control pl-5" placeholder="<?php echo xla('Search issues, medications or allergies...'); ?>" autocomplete="off" style="width: 100%; padding-left: 2.2rem !important;">
+                        </div>
+                    </div>
+                </div>
                 <?php foreach ($ISSUE_TYPES as $t => $focustitles) : ?>
                     <?php
                     if (!AclMain::aclCheckIssue($t)) {
@@ -276,7 +284,7 @@ $oemr_ui = new OemrUI($arrOeUiSettings);
                     }
 
                     ?>
-                    <div class="bg-light w-100 p-3 d-flex sticky-top justify-content-between align-items-center">
+                    <div class="sticky-section-header w-100 p-3 d-flex sticky-top justify-content-between align-items-center mb-3">
                         <div class="d-flex align-items-center">
                             <?php if (!($noIssues || $nothingRecorded)) : ?>
                                 <input type="checkbox" class="selection-check mr-1" onclick="headerSelectionChanged(this, <?php echo attr_js($t);?>);" />
@@ -370,61 +378,79 @@ $oemr_ui = new OemrUI($arrOeUiSettings);
 
                             $outcome = ($row['outcome']) ?  generate_display_field(['data_type' => 1, 'list_id' => 'outcome'], $row['outcome']) : false;
                             ?>
-                        <div class="list-group-item p-1">
-                            <div class="summary m-0 p-0 d-flex w-100 justify-content-end align-content-center">
-                                <?php if ($canSelect) : ?>
-                                    <input type="checkbox" class="selection-check mt-1 mr-2" data-issue="<?php echo attr($t); ?>" name="sel_<?php echo attr($rowid); ?>" id="sel_<?php echo attr($rowid); ?>" />
-                                <?php endif; ?>
-                                <div class="flex-fill pl-2">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-outline-text btn-sm collapsed" data-toggle="collapse" data-target="#details_<?php echo attr($row['id']); ?>" aria-expanded="false" aria-controls="details_<?php echo attr($row['id']); ?>"><span aria-hidden="true" class="fa fa-fw fa-chevron-right"></span></button>
-                                        <button type="button" class="btn btn-outline-text btn-sm editenc" data-issue-id="<?php echo attr($row['id']); ?>"><span aria-hidden="true" class="fa fa-fw fa-link"></span></button>
+                        <?php
+                        $statusBadgeClass = "badge-teal";
+                        if (stripos($statusCompute, 'active') !== false) {
+                            $statusBadgeClass = "badge-teal";
+                        } elseif (stripos($statusCompute, 'completed') !== false || stripos($statusCompute, 'resolved') !== false) {
+                            $statusBadgeClass = "badge-success";
+                        } else {
+                            $statusBadgeClass = "badge-secondary";
+                        }
+                        ?>
+                        <div class="list-group-item p-3 mb-3" style="background: var(--card-bg) !important; border: 1px solid var(--card-border) !important; border-radius: 12px; transition: all 0.2s ease;">
+                            <div class="summary m-0 p-0 d-flex w-100 justify-content-between align-items-center">
+                                <div class="d-flex align-items-center flex-fill pl-2">
+                                    <?php if ($canSelect) : ?>
+                                        <input type="checkbox" class="selection-check mt-1 mr-3" data-issue="<?php echo attr($t); ?>" name="sel_<?php echo attr($rowid); ?>" id="sel_<?php echo attr($rowid); ?>" />
+                                    <?php endif; ?>
+                                    <div class="btn-group mr-3" role="group">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm collapsed" data-toggle="collapse" data-target="#details_<?php echo attr($row['id']); ?>" aria-expanded="false" aria-controls="details_<?php echo attr($row['id']); ?>"><span aria-hidden="true" class="fa fa-fw fa-chevron-right"></span></button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm editenc" data-issue-id="<?php echo attr($row['id']); ?>"><span aria-hidden="true" class="fa fa-fw fa-link"></span></button>
                                     </div>
-                                    <a href="#" data-issue-id="<?php echo attr($row['id']); ?>" class="font-weight-bold issue_title" data-toggle="tooltip" data-placement="right" title="<?php echo text(($diag ?? '') . ": " . ($codedesc ?? '')); ?>">
-                                        <?php echo text($disptitle); ?>
-                                    </a>&nbsp;(<?php echo $statusCompute; ?><?php echo (!$resolved && $outcome) ? ", $outcome" : ""; ?>)
-                                    <?php
-                                    if ($focustitles[0] == "Allergies") :
-                                        echo generate_display_field(['data_type' => '1','list_id' => 'reaction'], $row['reaction']);
-                                    endif;
-                                    ?>
+                                    <div class="mr-3">
+                                        <a href="#" data-issue-id="<?php echo attr($row['id']); ?>" class="font-weight-bold issue_title" data-toggle="tooltip" data-placement="right" title="<?php echo text(($diag ?? '') . ": " . ($codedesc ?? '')); ?>" style="font-size: 0.95rem; color: #ffffff !important;">
+                                            <?php echo text($disptitle); ?>
+                                        </a>
+                                    </div>
+                                    <div class="mr-3">
+                                        <span class="badge <?php echo $statusBadgeClass; ?>"><?php echo $statusCompute; ?><?php echo (!$resolved && $outcome) ? ", $outcome" : ""; ?></span>
+                                    </div>
+                                    <?php if ($focustitles[0] == "Allergies" && !empty($row['reaction'])) : ?>
+                                        <div class="mr-3">
+                                            <span class="badge badge-secondary"><?php echo generate_display_field(['data_type' => '1','list_id' => 'reaction'], $row['reaction']); ?></span>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
-                                <?php if ($focustitles[0] == "Allergies") :
-                                    $l = new ListService();
-                                    $sev = $l->getListOption('severity_ccda', $row['severity_al']);
-                                    $hgl = (in_array($row['severity_al'], ['severe', 'life_threatening_severity', 'fatal'])) ? 'bg-warning font-weight-bold px-1' : '';
-                                    ?>
-                                <span class="mr-3 <?php echo attr($hgl); ?>">
-                                    <?php echo text($sev['title']); ?>
-                                </span>
-                                <?php endif; ?>
-                                <div class="text-right">
-                                    <span class="font-weight-bold d-inline"><?php echo xlt("Occurrence"); ?></span>
-                                    <span><?php echo generate_display_field(['data_type' => '1', 'list_id' => 'occurrence'], $row['occurrence']); ?></span>
+                                
+                                <div class="d-flex align-items-center">
+                                    <?php if ($focustitles[0] == "Allergies") :
+                                        $l = new ListService();
+                                        $sev = $l->getListOption('severity_ccda', $row['severity_al']);
+                                        $hgl = (in_array($row['severity_al'], ['severe', 'life_threatening_severity', 'fatal'])) ? 'badge-danger' : 'badge-secondary';
+                                        ?>
+                                        <span class="badge <?php echo $hgl; ?> mr-3">
+                                            <?php echo text($sev['title']); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                    <div class="text-right text-secondary small">
+                                        <span class="font-weight-bold d-inline"><?php echo xlt("Occurrence"); ?>:</span>
+                                        <span><?php echo generate_display_field(['data_type' => '1', 'list_id' => 'occurrence'], $row['occurrence']) ?: '-'; ?></span>
+                                    </div>
                                 </div>
                             </div>
                             <div id="details_<?php echo attr($row['id']); ?>" class="collapse">
-                                <div class="d-flex flex-column w-100 my-3">
-                                    <div class="d-flex w-100">
-                                        <div class="pr-3">
-                                            <div class="font-weight-bold"><?php echo xlt("Last Modified"); ?></div>
+                                <div class="d-flex flex-column w-100 my-3 p-3 rounded" style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.04);">
+                                    <div class="d-flex w-100 flex-wrap">
+                                        <div class="pr-3 mb-2">
+                                            <div class="font-weight-bold text-secondary small"><?php echo xlt("Last Modified"); ?></div>
                                             <div class="pl-1" title="<?php echo attr($fullModDate); ?>"><?php echo text($shortModDate); ?></div>
                                         </div>
                                         <?php if ($row['begdate']) : ?>
-                                            <div class="pr-3">
-                                                <div class="font-weight-bold "><?php echo xlt("Start Date"); ?></div>
+                                            <div class="pr-3 mb-2">
+                                                <div class="font-weight-bold text-secondary small"><?php echo xlt("Start Date"); ?></div>
                                                 <div class="" title="<?php echo text($fullBegDate); ?>"><?php echo text($shortBegDate); ?></div>
                                             </div>
                                         <?php endif; ?>
                                         <?php if ($row['enddate']) : ?>
-                                            <div class="pr-3">
-                                                <div class="font-weight-bold "><?php echo xlt("End Date"); ?></div>
+                                            <div class="pr-3 mb-2">
+                                                <div class="font-weight-bold text-secondary small"><?php echo xlt("End Date"); ?></div>
                                                 <div title="<?php echo attr($fullEndDate); ?>"><?php echo text($shortEndDate); ?></div>
                                             </div>
                                         <?php endif; ?>
                                         <?php if ($t == "allergy" || $t == "medical_problem") : ?>
-                                            <div class="pr-3">
-                                                <div class="font-weight-bold"><?php echo xlt("Verification"); ?></div>
+                                            <div class="pr-3 mb-2">
+                                                <div class="font-weight-bold text-secondary small"><?php echo xlt("Verification"); ?></div>
                                                 <div>
                                                 <?php
                                                     $codeListName = (!empty($thistype) && ($thistype == 'medical_problem')) ? 'condition-verification' : 'allergyintolerance-verification';
@@ -434,19 +460,19 @@ $oemr_ui = new OemrUI($arrOeUiSettings);
                                             </div>
                                         <?php endif; ?>
                                         <?php if ($row['referredby']) : ?>
-                                            <div class="pr-3">
-                                                <div class="font-weight-bold"><?php echo xlt("Referred By"); ?></div>
+                                            <div class="pr-3 mb-2">
+                                                <div class="font-weight-bold text-secondary small"><?php echo xlt("Referred By"); ?></div>
                                                 <div><?php echo text($row['referredby']); ?></div>
                                             </div>
                                         <?php endif; ?>
                                         <?php if ($row['comments']) : ?>
-                                            <div class="flex-fill">
-                                                <div class="font-weight-bold"><?php echo xlt("Comments"); ?></div>
+                                            <div class="flex-fill mb-2">
+                                                <div class="font-weight-bold text-secondary small"><?php echo xlt("Comments"); ?></div>
                                                 <div><?php echo text($row['comments']); ?></div>
                                             </div>
                                         <?php endif; ?>
                                     </div>
-                                    <div class="d-flex w-100 mt-2">
+                                    <div class="d-flex w-100 mt-2 border-top pt-2" style="border-color: rgba(255,255,255,0.06);">
                                         <?php echo $codetext; ?>
                                     </div>
                                 </div>
@@ -482,6 +508,19 @@ $(function () {
     $("#newencounter").click(function() { newEncounter(); });
     $("#history").click(function() { GotoHistory(); });
     $("#back").click(function() { GoBack(); });
+
+    // Live search filter for issues, meds and allergies
+    $("#filter-issues").on("input", function() {
+        var val = $(this).val().toLowerCase().trim();
+        $(".list-group-item").each(function() {
+            var text = $(this).text().toLowerCase();
+            if (text.indexOf(val) > -1) {
+                $(this).attr('style', 'display: block !important;');
+            } else {
+                $(this).attr('style', 'display: none !important;');
+            }
+        });
+    });
 
     $(".noneCheck").click(function() {
       top.restoreSession();

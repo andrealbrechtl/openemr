@@ -1,0 +1,62 @@
+[
+  {
+    "label": "Dashboard{{patient file}}",
+    "menu_id": "dashboard",
+    "target": "main",
+    "on_click": "top.restoreSession()",
+    "url": "interface/patient_file/summary/demographics.php",
+    "pid": "false",
+    "children": [],
+    "requirement": 0
+  },
+  {
+    "label": "History",
+    "menu_id": "history",
+    "target": "main",
+    "on_click": "top.restoreSession()",
+    "url": "interface/patient_file/history/history.php",
+    "pid": "false",
+    "children": [],
+    "requirement": 0
+  },
+  {
+    "label": "Immunizations",
+    "menu_id": "immunizations",
+    "target": "main",
+    "on_click": "top.restoreSession()",
+    "url": "interface/patient_file/summary/immunizations.php",
+    "pid": "false",
+    "children": [],
+    "requirement": 0
+  },
+  {
+    "label": "Exams / Labs",
+    "menu_id": "labdata",
+    "target": "main",
+    "on_click": "top.restoreSession()",
+    "url": "interface/patient_file/summary/labdata.php",
+    "pid": "false",
+    "children": [],
+    "requirement": 0
+  },
+  {
+    "label": "Prescriptions",
+    "menu_id": "prescriptions",
+    "target": "main",
+    "on_click": "top.restoreSession()",
+    "url": "interface/patient_file/summary/stats_full.php?active=all&category=medication",
+    "pid": "false",
+    "children": [],
+    "requirement": 0
+  },
+  {
+    "label": "Documents",
+    "menu_id": "documents",
+    "target": "main",
+    "on_click": "top.restoreSession()",
+    "url": "controller.php?document&list&patient_id=",
+    "pid": "true",
+    "children": [],
+    "requirement": 0
+  }
+]

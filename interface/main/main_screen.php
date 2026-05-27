@@ -462,7 +462,13 @@ if ((!AuthUtils::useActiveDirectory()) && (OEGlobalsBag::getInstance()->getInt('
 }
 
 $listSvc = new ListService();
-$_tabs = $listSvc->getOptionsByListName('default_open_tabs', ['activity' => 1]);
+$_tabs = [
+    [
+        'notes' => 'interface/main/welcome.php',
+        'option_id' => 'welcome',
+        'title' => 'Home',
+    ]
+];
 
 if ($is_expired) {
     //display the php file containing the password expiration message.

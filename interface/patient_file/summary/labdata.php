@@ -96,15 +96,55 @@ $main_spell .= "ORDER BY procedure_report.date_collected DESC ";
 <?php } ?>
 
 <script>
-function checkAll(bx) {
-    for (var tbls=document.getElementsByTagName("table"), i=tbls.length; i--; ) {
-        for (var bxs=tbls[i].getElementsByTagName("input"), j=bxs.length; j--; ) {
-        if (bxs[j].type=="checkbox") {
-            bxs[j].checked = bx.checked;
-        }
-      }
+function toggleTile(checkbox) {
+    var label = checkbox.closest('.lab-tile');
+    var icon = label.querySelector('.lab-tile-checkbox i');
+    if (checkbox.checked) {
+        label.classList.add('active-tile');
+        icon.classList.remove('fa-square');
+        icon.classList.add('fa-check-square');
+    } else {
+        label.classList.remove('active-tile');
+        icon.classList.remove('fa-check-square');
+        icon.classList.add('fa-square');
     }
 }
+
+function toggleMode(radio) {
+    document.querySelectorAll('.mode-tile').forEach(function(tile) {
+        tile.classList.remove('active-tile');
+    });
+    radio.closest('.mode-tile').classList.add('active-tile');
+}
+
+var allSelected = false;
+function toggleAllTiles() {
+    allSelected = !allSelected;
+    var checkboxes = document.querySelectorAll('#labs-checkbox-grid input[type="checkbox"]');
+    checkboxes.forEach(function(cb) {
+        cb.checked = allSelected;
+        toggleTile(cb);
+    });
+}
+
+// Live filtering
+document.addEventListener('DOMContentLoaded', function() {
+    var filterInput = document.getElementById('filter-labs');
+    if (filterInput) {
+        filterInput.addEventListener('input', function() {
+            var val = this.value.toLowerCase().trim();
+            var tiles = document.querySelectorAll('.lab-tile');
+            tiles.forEach(function(tile) {
+                var code = tile.getAttribute('data-code').toLowerCase();
+                if (code.indexOf(val) > -1) {
+                    tile.style.display = 'inline-flex';
+                } else {
+                    tile.style.display = 'none';
+                }
+            });
+        });
+    }
+});
 </script>
 </head>
 <body>
@@ -113,14 +153,20 @@ function checkAll(bx) {
             <div class="col-12">
                 <h2><?php echo xlt('Labs'); ?></h2>
                 <?php if (!$printable) { ?>
-                <div class="form-row">
-                    <div class="col-md">
+                <div class="form-row align-items-center">
+                    <div class="col-md-4">
                         <a href='../summary/demographics.php' class='btn btn-secondary btn-back' onclick='top.restoreSession()'>
-                            <span><?php echo xlt('Back to Patient') ?></span>
+                            <span><i class="fa fa-chevron-left mr-1"></i><?php echo xlt('Back to Patient') ?></span>
                         </a>
                     </div>
-                    <div class="col-md text-right">
-                        <input type='checkbox' onclick="checkAll(this)" /> <?php echo xlt('Toggle All'); ?>
+                    <div class="col-md-5 my-2">
+                        <div class="search-container" style="position: relative; width: 100%;">
+                            <i class="fa fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none;"></i>
+                            <input type="text" id="filter-labs" class="form-control pl-5" placeholder="<?php echo xla('Search lab tests...'); ?>" style="width: 100%;" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-right">
+                        <button type="button" class="btn btn-secondary btn-sm" id="btn-toggle-all" onclick="toggleAllTiles()"><?php echo xlt('Select/Unselect All'); ?></button>
                     </div>
                 </div>
                 <?php } ?>
@@ -165,80 +211,58 @@ function checkAll(bx) {
                 <?php if (!$printable) { ?>
                     <form method='post' action='<?php echo attr($path_to_this_script); ?>' onsubmit='return top.restoreSession()'>
                         <div id='reports_list'>
-                            <h3><?php echo xlt('Select items'); ?>:</h3>
-                            <div class="table-responsive">
-                                <table class="table table-borderless border border-dark">
-                                    <tr>
-                                        <?php
-                                        // What items are there for patient $pid?
-                                        // -----------------------------------------------
-                                        $value_list = [];
-                                        $value_select = $_POST['value_code'] ?? null; // what items are checkedboxed?
-                                        $tab = 0;
-                                        echo "<td>";
+                            <h3 class="mb-3"><?php echo xlt('Select lab parameters to view'); ?>:</h3>
+                            <div class="d-flex flex-wrap gap-2 mb-4" id="labs-checkbox-grid">
+                                <?php
+                                $value_list = [];
+                                $value_select = $_POST['value_code'] ?? null;
+                                
+                                $spell  = "SELECT DISTINCT procedure_result.result_code AS value_code ";
+                                $spell .= "FROM procedure_result ";
+                                $spell .= "JOIN procedure_report ";
+                                $spell .= "	ON procedure_result.procedure_report_id = procedure_report.procedure_report_id ";
+                                $spell .= "JOIN procedure_order ";
+                                $spell .= "	ON procedure_report.procedure_order_id = procedure_order.procedure_order_id ";
+                                $spell .= "WHERE procedure_order.patient_id = ? ";
+                                $spell .= "AND procedure_result.result IS NOT NULL ";
+                                $spell .= "AND procedure_result.result != ''";
+                                $spell .= "ORDER BY procedure_result.result_code ASC ";
+                                $query  = sqlStatement($spell, [$pid]);
 
-                                        $spell  = "SELECT DISTINCT procedure_result.result_code AS value_code ";
-                                        $spell .= "FROM procedure_result ";
-                                        $spell .= "JOIN procedure_report ";
-                                        $spell .= "	ON procedure_result.procedure_report_id = procedure_report.procedure_report_id ";
-                                        $spell .= "JOIN procedure_order ";
-                                        $spell .= "	ON procedure_report.procedure_order_id = procedure_order.procedure_order_id ";
-                                        $spell .= "WHERE procedure_order.patient_id = ? ";
-                                        $spell .= "AND procedure_result.result IS NOT NULL ";
-                                        $spell .= "AND procedure_result.result != ''";
-                                        $spell .= "ORDER BY procedure_result.result_code ASC ";
-                                        $query  = sqlStatement($spell, [$pid]);
-
-                                        // Select which items to view...
-                                        $i = 0;
-                                        while ($myrow = sqlFetchArray($query)) {
-                                            echo "<input type='checkbox' name='value_code[]' value=" . attr($myrow['value_code']) . " ";
-                                            if ($value_select) {
-                                                if (in_array($myrow['value_code'], $value_select)) {
-                                                    echo "checked='checked' ";
-                                                }
-                                            }
-
-                                            echo " /> " . text($myrow['value_code']) . "<br />";
-                                            $value_list[$i]['value_code'] = $myrow['value_code'];
-                                            $i++;
-                                            $tab++;
-                                            if ($tab == 10) {
-                                                echo "</td><td>";
-                                                $tab = 0;
-                                            }
-                                        }
-                                        ?>
-                                    </tr>
-                                </table>
+                                $i = 0;
+                                while ($myrow = sqlFetchArray($query)) {
+                                    $code = $myrow['value_code'];
+                                    $checked = ($value_select && in_array($code, $value_select)) ? "checked='checked'" : "";
+                                    $activeClass = $checked ? "active-tile" : "";
+                                    ?>
+                                    <label class="lab-tile <?php echo $activeClass; ?>" data-code="<?php echo attr($code); ?>">
+                                        <input type="checkbox" name="value_code[]" value="<?php echo attr($code); ?>" <?php echo $checked; ?> style="display: none;" onchange="toggleTile(this)">
+                                        <span class="lab-tile-checkbox"><i class="fa <?php echo $checked ? 'fa-check-square' : 'fa-square'; ?>"></i></span>
+                                        <span class="lab-tile-label"><?php echo text($code); ?></span>
+                                    </label>
+                                    <?php
+                                    $value_list[$i]['value_code'] = $code;
+                                    $i++;
+                                }
+                                ?>
                             </div>
                         </div> <!-- ends of reports_list -->
                         <hr/>
                         <!-- Choose output mode [list vs. matrix] -->
-                        <h3><?php echo xlt('Select output'); ?>:</h3>
-                        <div class="form-row">
-                            <div class="form-check form-check-inline">
-                                <?php
-                                echo "<td><input type='radio' name='mode' ";
-                                $mode = $_POST['mode'] ?? null;
-                                if ($mode == 'list') {
-                                    echo "checked='checked' ";
-                                }
-                                echo " value='list' /> " . xlt('List') . "<br />";
-                                ?>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <?php
-                                echo "<input type='radio' name='mode' ";
-                                if ($mode != 'list') {
-                                    echo "checked='checked' ";
-                                }
-                                echo " value='matrix' /> " . xlt('Matrix') . "<br /></td>";
-                                ?>
-                            </div>
+                        <h3 class="mb-3"><?php echo xlt('Select output format'); ?>:</h3>
+                        <div class="d-flex gap-2 mb-3">
+                            <?php $mode = $_POST['mode'] ?? 'matrix'; ?>
+                            <label class="mode-tile <?php echo $mode === 'list' ? 'active-tile' : ''; ?>">
+                                <input type="radio" name="mode" value="list" <?php echo $mode === 'list' ? 'checked' : ''; ?> style="display: none;" onchange="toggleMode(this)">
+                                <span><i class="fa fa-list mr-1"></i> <?php echo xlt('List'); ?></span>
+                            </label>
+                            <label class="mode-tile <?php echo $mode !== 'list' ? 'active-tile' : ''; ?>">
+                                <input type="radio" name="mode" value="matrix" <?php echo $mode !== 'list' ? 'checked' : ''; ?> style="display: none;" onchange="toggleMode(this)">
+                                <span><i class="fa fa-table mr-1"></i> <?php echo xlt('Matrix'); ?></span>
+                            </label>
                         </div>
                         <button type='submit' name='submit' class='btn btn-primary btn-save mt-2' value='<?php echo xla('Submit'); ?>'>
-                            <?php echo xlt('Submit'); ?>
+                            <i class="fa fa-check mr-1"></i><?php echo xlt('Apply Filter'); ?>
                         </button>
                     </form>
                     <!-- end "if printable" ? -->

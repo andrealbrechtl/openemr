@@ -1339,11 +1339,13 @@ $oemr_ui = new OemrUI($arrOeUiSettings);
                     $sectionRenderEvents = $ed->dispatch(new SectionEvent('primary'), SectionEvent::EVENT_HANDLE);
                     $sectionRenderEvents->addCard(new DemographicsViewCard($result, $result2, ['dispatcher' => $ed]));
 
-                    if (!OEGlobalsBag::getInstance()->getBoolean('hide_billing_widget')) {
+                    // Billing card hidden to simplify interface
+                    if (false && !OEGlobalsBag::getInstance()->getBoolean('hide_billing_widget')) {
                         $sectionRenderEvents->addCard(new BillingViewCard($pid, $insco_name, $result['billing_note'], $result3, ['dispatcher' => $ed]));
                     }
 
-                    if (!in_array('card_insurance', $hiddenCards)) {
+                    // Insurance card hidden to simplify interface
+                    if (false && !in_array('card_insurance', $hiddenCards)) {
                         $sectionRenderEvents->addCard(new InsuranceViewCard($pid, ['dispatcher' => $ed]));
                     }
 
